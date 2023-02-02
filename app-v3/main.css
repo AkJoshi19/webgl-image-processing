@@ -1,0 +1,12 @@
+@import url("https://webglfundamentals.org/webgl/resources/webgl-tutorials.css");
+body {
+  margin: 0;
+}
+canvas {
+  width: 600px;
+  height: 400px;
+  display: block;
+}
+#ui {
+  width: 100px;
+}
