@@ -151,45 +151,6 @@ void main() {
 }
   `;
 
-const gaussianBlur = `
-precision mediump float;
-  
-varying vec2 v_texcoord;
-
-uniform sampler2D u_texture;
-uniform vec3 iResolution;
-
-void main()
-{
-    const float Pi = 6.28318530718; // Pi*2
-    
-    // GAUSSIAN BLUR SETTINGS {{{
-    const float Directions = 16.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
-    const float Quality = 3.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
-    const float Size = 2.0; // BLUR SIZE (Radius)
-    // GAUSSIAN BLUR SETTINGS }}}
-   
-    vec2 Radius = Size/iResolution.xy;
-    
-    // Normalized pixel coordinates (from 0 to 1)
-    vec2 uv = -1.0 + 2.0 * v_texcoord;
-    // Pixel colour
-    vec4 Color = texture2D(u_texture, uv);
-    
-    // Blur calculations
-    for( float d=0.0; d<Pi; d+=Pi/Directions)
-    {
-		for(float i=1.0/Quality; i<=1.0; i+=1.0/Quality)
-        {
-			Color += texture2D(u_texture, uv+vec2(cos(d),sin(d))*Radius*i);		
-        }
-    }
-    
-    // Output to screen
-    Color /= Quality * Directions - 15.0;
-    gl_FragColor =  vec4(1.0 - Color.rgb, 1.0);
-}`
-
 
 const ga = 
 `
@@ -202,7 +163,7 @@ uniform vec2 iResolution;
 uniform vec2 iDirection;
 void main()
 {
-  vec2 p =  -1.0 + 2.0 * v_texcoord;
+  vec2 p =  v_texcoord;
 
   vec4 color = vec4(0.0);
   vec2 off1 = vec2(1.3846153846) * iDirection * 16.0 / iResolution;
@@ -307,7 +268,7 @@ const draw =(program, texcoordBuffer, positionLocation)=> {
   var drawInfo2 = {
     vertices: {currSX : 0.0, currSY : 0.0, currEX : 1.0 , currEY : -1.0},
     textureInfo: textureInfos[2],
-    effects:["greyScale"]
+    effects:[]
   };
   drawInfos.push(drawInfo2);
 
@@ -327,6 +288,7 @@ const drawImage = (drawInfo, program, texcoordBuffer, positionLocation) => {
   const positionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   var vertices = utils.prepareRectVec2(drawInfo.vertices.currSX, drawInfo.vertices.currSY, drawInfo.vertices.currEX, drawInfo.vertices.currEY);
+  console.log(drawInfo.vertices.currSX+"-"+ drawInfo.vertices.currSY+"-"+ drawInfo.vertices.currEX+"-"+ drawInfo.vertices.currEY +"----" +vertices.toString());
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
   // Tell WebGL to use our shader program pair
   gl.useProgram(program);
